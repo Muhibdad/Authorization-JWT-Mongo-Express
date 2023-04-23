@@ -22,7 +22,7 @@ router
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(authController.protect,
-    authController.restrictTo(['admin','lead']),
-     tourController.deleteTour);
+    authController.restrictTo('admin','lead'),
+  tourController.deleteTour);
 
 module.exports = router;
