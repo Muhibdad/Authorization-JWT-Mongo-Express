@@ -15,7 +15,8 @@ exports.signup= catchAsync(async(req,res,next)=>{
             name:req.body.name,
             email:req.body.email,
             password:req.body.password,
-            passwordConfirm:req.body.passwordConfirm
+            passwordConfirm:req.body.passwordConfirm,
+            role:req.body.role
         });
 
         const token =signToken(newUser._id);
@@ -68,13 +69,12 @@ exports.protect=catchAsync(async(req,res,next)=>{
     const decoded= await promisify(jwt.verify)(token,process.env.JWT_SECRET,)
     // console.log(decoded);
     
-    //3. check if user exists
-
+    // 3. check if user exists
     const freshUser=await User.findById(decoded.id);
     if(!freshUser){
         return next(new AppError("The User does not exist",401));
     }
-    //4.check if user changed password after the token was issued
+    // //4.check if user changed password after the token was issued
     if(freshUser.changedPasswordAfter(decoded.iat)){
         return new AppError('User Recently changed Password! Plz login again',401)
     };
@@ -83,3 +83,13 @@ exports.protect=catchAsync(async(req,res,next)=>{
     req.user=freshUser;
     next();
 })
+exports.restrictTo=(...roles)=>{
+    return(req,res,next)=>{
+        //roles is an array 
+        //role='user'
+        if(!roles.includes(req.user.role)){
+            return next(new AppError('You donot have permission'));
+        }
+        next();
+    }
+}

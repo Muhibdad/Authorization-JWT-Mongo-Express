@@ -14,6 +14,11 @@ const userSchema=new mongoose.Schema({
         required:[true,"Email is a mandatory field"],
         validate:[validator.isEmail,"Not a valid Email"]
     },  
+    role:{
+        type:String,
+        enum:["user","tour-guide","lead-admin","admin"],
+        default:"user"
+    },
     password:{
         type:String,
         required:[true,"Password is a mandatory field"],
